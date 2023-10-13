@@ -42,7 +42,8 @@ public:
     geometry_msgs::Twist base_cmd;
     //the command will be to go forward at 0.25 m/s
     base_cmd.linear.x = base_cmd.angular.z = 0;
-    base_cmd.linear.y = -0.1;
+    base_cmd.linear.y = ((distance > 0) ? 1. : -1.) *0.1;
+    distance = std::abs(distance);
     
     ros::Rate rate(10.0);
     bool done = false;
@@ -80,6 +81,13 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "robot_driver");
   ros::NodeHandle nh;
 
+  double dist = 0.25;
+  if (argc > 1)
+  {
+    std::string dist_str = std::string(argv[1]);
+    dist = std::stod(dist_str);
+  }
+
   RobotDriver driver(nh);
-  driver.driveForwardOdom(0.25);
+  driver.driveForwardOdom(dist);
 }
